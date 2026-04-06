@@ -8,9 +8,9 @@ services:
       - node.name=elasticsearch
       - cluster.name=es-docker-cluster
       - discovery.type=single-node
-      - boostrap.memory.enabled=true
+      - bootstrap.memory_lock=true
       - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
     ulimits:
       memlock:
         soft: -1
@@ -24,7 +24,7 @@ services:
       - elastic
 
   kibana:
-    image: docker.elastic.co/kibana:8.12.0
+    image: docker.elastic.co/kibana/kibana:8.12.0
     container_name: kibana
     ports:
       - "5601:5601"
@@ -39,7 +39,7 @@ services:
       - elastic
 
 volumes:
-  elasticsearch-date:
+  elasticsearch-data:
     driver: local
 
 networks:
