@@ -41,7 +41,7 @@ public class Restaurant {
     private  Float averageRating;
 
     @GeoPointField
-    private GeoPoint geoLoaction;
+    private GeoPoint geoLoaction;   //storing restaurant loc data
 
     @Field(type = FieldType.Nested)
     private  Address address;
