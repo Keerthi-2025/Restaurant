@@ -1,5 +1,8 @@
 package com.learning.restaurant.exceptions;
 
+
+//this exception extends baseexception for file operations
+
 public class StorageException extends BaseException{
     public StorageException() {
     }

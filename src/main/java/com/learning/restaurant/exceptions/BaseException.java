@@ -1,5 +1,9 @@
 package com.learning.restaurant.exceptions;
 
+
+//BaseException serves as parent for all custom exceptions
+//RuntimeException to avoid checked exceptions
+
 public class BaseException extends  RuntimeException {
     public BaseException() {
     }
