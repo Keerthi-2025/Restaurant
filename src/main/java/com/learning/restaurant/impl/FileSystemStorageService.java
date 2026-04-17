@@ -2,19 +2,22 @@ package com.learning.restaurant.impl;
 
 import com.learning.restaurant.exceptions.StorageException;
 import com.learning.restaurant.services.StorageService;
-import com.nimbusds.jose.util.Resource;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
-
 
 @Service
 @Slf4j
@@ -22,7 +25,7 @@ import java.util.Optional;
 
 public class FileSystemStorageService implements StorageService {
 
-    @Value("${app.storage.location:uploads}")
+    @Value("${app.storage.location:uploads}") //vale -> configure storage location path
     private  String storageLocation;
 
     private Path rootLocation;
@@ -41,11 +44,57 @@ public class FileSystemStorageService implements StorageService {
 
     @Override
     public String store(MultipartFile file, String filename) {
-        return "";
+        //check if file is empty
+        try{
+
+        if(file.isEmpty()){
+            throw new StorageException("Cannot save an empty file");
+        }
+
+        //file extensions
+        String extensions = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        String finalFileName = filename + "." + extensions;
+
+        Path destinationFile = rootLocation
+                .resolve(Paths.get(finalFileName))
+                .normalize()
+                .toAbsolutePath();
+
+        if(!destinationFile.getParent().equals(rootLocation.toAbsolutePath())){
+            throw new StorageException("Cannot store the file outside the specified directory");
+        }
+        try(InputStream inputStream = file.getInputStream()){
+            Files.copy(inputStream,destinationFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return  finalFileName;
+    } catch (IOException e ){
+            throw new StorageException("Failed to store file", e);
+        }
+
     }
 
+
     @Override
-    public Optional<Resource> loadAsResource(String id) {
-        return Optional.empty();
-    }
+    public Optional<UrlResource> loadAsResource(String filename) {   //loadAsResource method to retreive stored files
+        try{
+
+       Path file = rootLocation.resolve(filename);
+
+            UrlResource resource = new UrlResource(file.toUri());   //to represent file system resources
+
+            if (resource.exists() && resource.isReadable()) {
+                return Optional.of(resource);
+            } else {
+                return Optional.empty();
+            }
+
+    } catch (MalformedURLException e){
+            log.warn("Could not read file: %s" .formatted(filename), e);
+            return Optional.empty();
+        }
 }
+}
+
+
+
