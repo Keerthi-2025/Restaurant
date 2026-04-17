@@ -2,6 +2,7 @@ package com.learning.restaurant.impl;
 
 import com.learning.restaurant.exceptions.StorageException;
 import com.learning.restaurant.services.StorageService;
+import com.nimbusds.jose.util.Resource;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,7 +77,7 @@ public class FileSystemStorageService implements StorageService {
 
 
     @Override
-    public Optional<UrlResource> loadAsResource(String filename) {   //loadAsResource method to retreive stored files
+    public Optional<Resource> loadAsResource(String filename) {   //loadAsResource method to retreive stored files
         try{
 
        Path file = rootLocation.resolve(filename);

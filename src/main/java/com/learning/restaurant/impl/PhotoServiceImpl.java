@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+
+// this file is to manage photo metadata storage
 @Service
 @RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
@@ -21,7 +23,7 @@ public class PhotoServiceImpl implements PhotoService {
     @Override
 
     public Photo uploadPhoto(MultipartFile file) {
-      String photoId =  UUID.randomUUID().toString();
+      String photoId =  UUID.randomUUID().toString();  //uuid for unique identifiers for photo
         String url = storageService.store(file,photoId);
 
         return  Photo.builder()
@@ -32,6 +34,6 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     public Optional<Resource> getPhotoAsResource(String id) {
-        return Optional.empty();
+        return storageService.loadAsResource(id);
     }
 }
